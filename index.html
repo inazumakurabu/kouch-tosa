@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>土佐弁クイズ</title>
+
+<style>
+body{
+  font-family:"Kiwi Maru", serif;
+  background:linear-gradient(135deg,#fff1f5,#e8f7ff);
+  padding:20px;
+}
+h1{text-align:center;color:#ff6f91;}
+.card{
+  max-width:600px;
+  margin:30px auto;
+  background:#fff;
+  border-radius:20px;
+  padding:25px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.1);
+}
+.choice{
+  background:#f3f6ff;
+  border-radius:15px;
+  padding:12px;
+  margin:10px 0;
+  cursor:pointer;
+}
+.choice:hover{background:#e0e7ff}
+button{
+  border:none;
+  border-radius:20px;
+  padding:10px 20px;
+  margin:10px;
+  font-family:"Kiwi Maru";
+  cursor:pointer;
+}
+.yes{background:#ffb3c6;}
+.no{background:#ccc;}
+.center{text-align:center;}
+</style>
+</head>
+
+<body>
+
+<h1>🌸 土佐弁クイズ 🌸</h1>
+
+<div class="card" id="quiz"></div>
+
+<script>
+// 問題データ
+const beginner = [
+ {q:"「たまるかえ」って？", c:["本当に？","そんなわけない","ありがとう"], a:1},
+ {q:"「いごっそう」って？", c:["頑固者","お金持ち","優しい人"], a:0},
+ {q:"「えい」って？", c:["だめ","いい","早い"], a:1},
+ {q:"「なんちゃあない」って？", c:["仕方ない","大変","問題ない"], a:2},
+ {q:"「〜しゆう」って？", c:["している","した","する"], a:0},
+ {q:"「こじゃんと」って？", c:["少し","とても","全然"], a:1},
+ {q:"「はちきん」って？", c:["強い女性","可愛い人","子ども"], a:0},
+ {q:"「ちくと」って？", c:["ずっと","少し","すぐ"], a:1},
+ {q:"「〜やき」って？", c:["だから","しかし","でも"], a:0},
+ {q:"「ほいたらね」って？", c:["ありがとう","じゃあね","おはよう"], a:1}
+];
+
+const advanced = [
+ {q:"「えいがやないか」って？", c:["危ない","いいじゃない","だめ"], a:1},
+ {q:"「〜しちゅう」って？", c:["している最中","し終わった","しない"], a:0},
+ {q:"「しゃあしゃあ」って？", c:["図々しい","静か","速い"], a:0},
+ {q:"「たっすいがはいかん」って？", c:["根性がない","頭が悪い","優しい"], a:0},
+ {q:"「ずるい」って？", c:["重い","だるい","狡い"], a:1},
+ {q:"「おきゃく」って？", c:["友達","宴会","観光客"], a:1},
+ {q:"「〜ちや」って？", c:["〜だよ","〜かな","〜でしょ"], a:0},
+ {q:"「せわしい」って？", c:["忙しい","危険","うるさい"], a:0},
+ {q:"「たまげた」って？", c:["疲れた","驚いた","怒った"], a:1},
+ {q:"「ひやい」って？", c:["冷たい","暑い","眠い"], a:0}
+];
+
+let level = "beginner";
+let questions = [];
+let index = 0;
+
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-0.5);
+}
+
+function start(lv){
+  level = lv;
+  questions = shuffle(lv==="beginner"? [...beginner]:[...advanced]).slice(0,10);
+  index = 0;
+  show();
+}
+
+function show(){
+  const q = questions[index];
+  const el = document.getElementById("quiz");
+  el.innerHTML = `
+    <h2>${level==="beginner"?"🌱 初心者":"🔥 経験者"} ${index+1}/10</h2>
+    <p>${q.q}</p>
+    ${q.c.map((c,i)=>`<div class="choice" onclick="next()">${c}</div>`).join("")}
+  `;
+}
+
+function next(){
+  index++;
+  if(index<10){
+    show();
+  }else{
+    endLevel();
+  }
+}
+
+function endLevel(){
+  const el = document.getElementById("quiz");
+  if(level==="beginner"){
+    el.innerHTML=`
+      <h2>🌸 初心者レベル終了！</h2>
+      <p>経験者レベルに挑戦する？</p>
+      <div class="center">
+        <button class="yes" onclick="start('advanced')">はい</button>
+        <button class="no" onclick="finish()">いいえ</button>
+      </div>
+    `;
+  }else{
+    finish();
+  }
+}
+
+function finish(){
+  document.getElementById("quiz").innerHTML=`
+    <h2>🎉 クイズ終了！</h2>
+    <p>遊んでくれてありがとう🐟</p>
+  `;
+}
+
+start("beginner");
+</script>
+
+</body>
+</html>

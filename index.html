@@ -3,7 +3,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>土佐弁クイズ</title>
+<title>ゆるかわ♡土佐弁クイズ</title>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru&display=swap" rel="stylesheet">
 
 <style>
 body{
@@ -13,7 +14,7 @@ body{
 }
 h1{text-align:center;color:#ff6f91;}
 .card{
-  max-width:600px;
+  max-width:650px;
   margin:30px auto;
   background:#fff;
   border-radius:20px;
@@ -39,17 +40,19 @@ button{
 .yes{background:#ffb3c6;}
 .no{background:#ccc;}
 .center{text-align:center;}
+.score{color:#845ec2;font-size:1.1em;}
 </style>
 </head>
 
 <body>
 
-<h1>🌸 土佐弁クイズ 🌸</h1>
-
+<h1>🌸 ゆるかわ♡土佐弁クイズ 🌸</h1>
 <div class="card" id="quiz"></div>
 
 <script>
-// 問題データ
+// ===== 問題データ =====
+
+// 初心者（20問）
 const beginner = [
  {q:"「たまるかえ」って？", c:["本当に？","そんなわけない","ありがとう"], a:1},
  {q:"「いごっそう」って？", c:["頑固者","お金持ち","優しい人"], a:0},
@@ -60,67 +63,88 @@ const beginner = [
  {q:"「はちきん」って？", c:["強い女性","可愛い人","子ども"], a:0},
  {q:"「ちくと」って？", c:["ずっと","少し","すぐ"], a:1},
  {q:"「〜やき」って？", c:["だから","しかし","でも"], a:0},
- {q:"「ほいたらね」って？", c:["ありがとう","じゃあね","おはよう"], a:1}
+ {q:"「ほいたらね」って？", c:["ありがとう","じゃあね","おはよう"], a:1},
+ {q:"「いぬ」って？", c:["帰る","歩く","待つ"], a:0},
+ {q:"「おんちゃん」って？", c:["おじさん","お兄さん","お父さん"], a:0},
+ {q:"「やっちょく」って？", c:["やっておく","やめる","忘れる"], a:0},
+ {q:"「ばあ」って？", c:["とても","少し","全然"], a:0},
+ {q:"「いかん」って？", c:["だめ","行く","痛い"], a:0},
+ {q:"「〜やろうか」って？", c:["〜でしょう","〜しようか","〜だった"], a:1},
+ {q:"「あて」って？", c:["おかず","目的","友達"], a:0},
+ {q:"「ようけ」って？", c:["たくさん","少し","早く"], a:0},
+ {q:"「つかえる」って？", c:["疲れる","壊れる","役に立つ"], a:1},
+ {q:"「なにしゆう？」って？", c:["何してる？","どこ行く？","誰？"], a:0}
 ];
 
+// 経験者（20問）
 const advanced = [
  {q:"「えいがやないか」って？", c:["危ない","いいじゃない","だめ"], a:1},
  {q:"「〜しちゅう」って？", c:["している最中","し終わった","しない"], a:0},
  {q:"「しゃあしゃあ」って？", c:["図々しい","静か","速い"], a:0},
  {q:"「たっすいがはいかん」って？", c:["根性がない","頭が悪い","優しい"], a:0},
- {q:"「ずるい」って？", c:["重い","だるい","狡い"], a:1},
  {q:"「おきゃく」って？", c:["友達","宴会","観光客"], a:1},
  {q:"「〜ちや」って？", c:["〜だよ","〜かな","〜でしょ"], a:0},
  {q:"「せわしい」って？", c:["忙しい","危険","うるさい"], a:0},
  {q:"「たまげた」って？", c:["疲れた","驚いた","怒った"], a:1},
- {q:"「ひやい」って？", c:["冷たい","暑い","眠い"], a:0}
+ {q:"「ひやい」って？", c:["冷たい","暑い","眠い"], a:0},
+ {q:"「こく」って？", c:["言う","食べる","隠す"], a:0},
+ {q:"「しんどい」って？", c:["疲れた","悲しい","痛い"], a:0},
+ {q:"「はぶてる」って？", c:["すねる","殴る","逃げる"], a:0},
+ {q:"「なおす」って？", c:["片付ける","直す","捨てる"], a:0},
+ {q:"「おそがい」って？", c:["怖い","遅い","危険"], a:0},
+ {q:"「つ」って？", c:["かさぶた","石","虫"], a:0},
+ {q:"「やりき」って？", c:["だよね","やっぱり","でも"], a:0},
+ {q:"「いぬる」って？", c:["帰る","寝る","歩く"], a:0},
+ {q:"「いらう」って？", c:["触る","怒る","投げる"], a:0},
+ {q:"「いごく」って？", c:["動く","怒る","壊す"], a:0},
+ {q:"「ほうぼう」って？", c:["あちこち","遠く","すぐ"], a:0}
 ];
 
-let level = "beginner";
-let questions = [];
-let index = 0;
+// ===== ロジック =====
+let level="beginner";
+let questions=[];
+let index=0;
+let scoreBeginner=0;
+let scoreAdvanced=0;
 
 function shuffle(arr){
   return arr.sort(()=>Math.random()-0.5);
 }
 
 function start(lv){
-  level = lv;
-  questions = shuffle(lv==="beginner"? [...beginner]:[...advanced]).slice(0,10);
-  index = 0;
+  level=lv;
+  questions=shuffle(lv==="beginner"?[...beginner]:[...advanced]).slice(0,10);
+  index=0;
   show();
 }
 
 function show(){
-  const q = questions[index];
-  const el = document.getElementById("quiz");
-  el.innerHTML = `
+  const q=questions[index];
+  document.getElementById("quiz").innerHTML=`
     <h2>${level==="beginner"?"🌱 初心者":"🔥 経験者"} ${index+1}/10</h2>
     <p>${q.q}</p>
-    ${q.c.map((c,i)=>`<div class="choice" onclick="next()">${c}</div>`).join("")}
+    ${q.c.map((c,i)=>`<div class="choice" onclick="answer(${i})">${c}</div>`).join("")}
   `;
 }
 
-function next(){
-  index++;
-  if(index<10){
-    show();
-  }else{
-    endLevel();
+function answer(choice){
+  if(choice===questions[index].a){
+    level==="beginner"?scoreBeginner++:scoreAdvanced++;
   }
+  index++;
+  index<10?show():endLevel();
 }
 
 function endLevel(){
-  const el = document.getElementById("quiz");
   if(level==="beginner"){
-    el.innerHTML=`
+    document.getElementById("quiz").innerHTML=`
       <h2>🌸 初心者レベル終了！</h2>
+      <p class="score">正解数：${scoreBeginner} / 10</p>
       <p>経験者レベルに挑戦する？</p>
       <div class="center">
         <button class="yes" onclick="start('advanced')">はい</button>
         <button class="no" onclick="finish()">いいえ</button>
-      </div>
-    `;
+      </div>`;
   }else{
     finish();
   }
@@ -129,8 +153,9 @@ function endLevel(){
 function finish(){
   document.getElementById("quiz").innerHTML=`
     <h2>🎉 クイズ終了！</h2>
-    <p>遊んでくれてありがとう🐟</p>
-  `;
+    <p class="score">🌱 初心者：${scoreBeginner} / 10</p>
+    <p class="score">🔥 経験者：${scoreAdvanced} / 10</p>
+    <p>遊んでくれてありがとう🐟</p>`;
 }
 
 start("beginner");
